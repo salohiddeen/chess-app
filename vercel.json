@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npx turbo run build --filter=frontend...",
+  "buildCommand": "yarn turbo run build --filter=frontend...",
   "outputDirectory": "apps/frontend/dist",
   "rewrites": [
     {
