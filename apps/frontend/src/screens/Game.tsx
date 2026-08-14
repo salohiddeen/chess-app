@@ -1,5 +1,3 @@
-/* eslint-disable no-case-declarations */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useRef, useState } from 'react';
 import MoveSound from '/move.wav';
 import { Button } from '../components/Button';
@@ -81,7 +79,11 @@ export const Game = () => {
   }, [userSelectedMoveIndex]);
 
   useEffect(() => {
-    if (!user) {
+    const token = localStorage.getItem('token');
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasTokenInUrl = urlParams.has('token');
+
+    if (!user && !token && !hasTokenInUrl) {
       window.location.href = '/login';
     }
   }, [user]);
@@ -255,7 +257,7 @@ export const Game = () => {
       )}
       {started && (
         <div className="justify-center flex pt-4 text-white">
-          {(user.id === gameMetadata?.blackPlayer?.id ? 'b' : 'w') === chess.turn() ? 'Your turn' : "Opponent's turn"}
+          {(user?.id === gameMetadata?.blackPlayer?.id ? 'b' : 'w') === chess.turn() ? 'Your turn' : "Opponent's turn"}
         </div>
       )}
       <div className="justify-center flex">
@@ -269,7 +271,7 @@ export const Game = () => {
                       <div className="flex justify-between">
                         <UserAvatar gameMetadata={gameMetadata} />
                         {getTimer(
-                          user.id === gameMetadata?.whitePlayer?.id ? player2TimeConsumed : player1TimeConsumed
+                          user?.id === gameMetadata?.whitePlayer?.id ? player2TimeConsumed : player1TimeConsumed
                         )}
                       </div>
                     </div>
@@ -279,7 +281,7 @@ export const Game = () => {
                       <ChessBoard
                         started={started}
                         gameId={gameId ?? ''}
-                        myColor={user.id === gameMetadata?.blackPlayer?.id ? 'b' : 'w'}
+                        myColor={user?.id === gameMetadata?.blackPlayer?.id ? 'b' : 'w'}
                         chess={chess}
                         setBoard={setBoard}
                         socket={socket}
@@ -290,7 +292,7 @@ export const Game = () => {
                   {started && (
                     <div className="mt-4 flex justify-between">
                       <UserAvatar gameMetadata={gameMetadata} self />
-                      {getTimer(user.id === gameMetadata?.blackPlayer?.id ? player2TimeConsumed : player1TimeConsumed)}
+                      {getTimer(user?.id === gameMetadata?.blackPlayer?.id ? player2TimeConsumed : player1TimeConsumed)}
                     </div>
                   )}
                 </div>
