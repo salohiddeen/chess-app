@@ -8,8 +8,12 @@ export const useSocket = () => {
   const user = useUser();
 
   useEffect(() => {
-    if (!user) return;
-    const ws = new WebSocket(`${WS_URL}?token=${user.token}`);
+    
+    const token = localStorage.getItem('token') || user?.token;
+
+    if (!token) return;
+
+    const ws = new WebSocket(`${WS_URL}?token=${token}`);
 
     ws.onopen = () => {
       setSocket(ws);
