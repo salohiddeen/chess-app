@@ -17,7 +17,12 @@
   "pipeline": {
     "build": {
       "dependsOn": ["db:generate", "^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [
+        "dist/**",
+        "apps/frontend/dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
