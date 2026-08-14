@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useUser } from '@repo/store/useUser';
 
 const WS_URL =
   import.meta.env.VITE_APP_WS_URL ||
@@ -8,28 +9,32 @@ const WS_URL =
 
 export const useSocket = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const user = useUser();
 
   useEffect(() => {
-    const ws = new WebSocket(WS_URL);
+    const token = localStorage.getItem('token') || user?.token;
+
+    const url = token ? `${WS_URL}?token=${token}` : WS_URL;
+    const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      console.log('WS: Muvaffaqiyatli ulandi ✅');
+      console.log('WS: Ulandi ✅');
       setSocket(ws);
     };
 
-    ws.onerror = (error) => {
-      console.error('WS: Ulanishda xatolik ❌', error);
+    ws.onerror = (err) => {
+      console.error('WS Error:', err);
     };
 
     ws.onclose = () => {
-      console.warn('WS: Ulanish uzildi');
+      console.warn('WS: Uzildi');
       setSocket(null);
     };
 
     return () => {
       ws.close();
     };
-  }, []);
+  }, [user]);
 
   return socket;
 };
