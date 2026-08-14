@@ -9,17 +9,28 @@ import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import { COOKIE_MAX_AGE } from './consts';
 
+dotenv.config();
+
 const app = express();
 
-dotenv.config();
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(cookieParser());
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.use(
   session({
     secret: process.env.COOKIE_SECRET || 'keyboard cat',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: COOKIE_MAX_AGE },
+    proxy: true,
+    cookie: { 
+      secure: isProduction, 
+      sameSite: isProduction ? 'none' : 'lax',
+      maxAge: COOKIE_MAX_AGE 
+    },
   }),
 );
 
