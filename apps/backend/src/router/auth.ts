@@ -4,10 +4,12 @@ import jwt from 'jsonwebtoken';
 import { db } from '../db';
 import { v4 as uuidv4 } from 'uuid';
 import { COOKIE_MAX_AGE } from '../consts';
+
 const router = Router();
 
-const CLIENT_URL =
-  process.env.AUTH_REDIRECT_URL ?? 'http://localhost:5173/game/random';
+const BASE_BACKEND_URL = process.env.BACKEND_URL || 'https://chess-app-6g4f.onrender.com';
+const CLIENT_URL = process.env.AUTH_REDIRECT_URL ?? 'https://chess-app-frontend-alpha.vercel.app/game/random';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
 
 interface userJwtClaims {
@@ -23,7 +25,6 @@ interface UserDetails {
   isGuest?: boolean;
 }
 
-// this route is to be hit when the user wants to login as a guest
 router.post('/guest', async (req: Request, res: Response) => {
   const bodyData = req.body;
   let guestUUID = 'guest-' + uuidv4();
@@ -54,9 +55,6 @@ router.post('/guest', async (req: Request, res: Response) => {
 router.get('/refresh', async (req: Request, res: Response) => {
   if (req.user) {
     const user = req.user as UserDetails;
-
-    // Token is issued so it can be shared b/w HTTP and ws server
-    // Todo: Make this temporary and add refresh logic here
 
     const userDb = await db.user.findFirst({
       where: {
@@ -101,34 +99,43 @@ router.get('/logout', (req: Request, res: Response) => {
       res.status(500).json({ error: 'Failed to log out' });
     } else {
       res.clearCookie('jwt');
-      res.redirect('http://localhost:5173/');
+      const frontendHome = process.env.FRONTEND_URL || 'https://chess-app-frontend-alpha.vercel.app';
+      res.redirect(frontendHome);
     }
   });
 });
 
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] }),
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    callbackURL: `${BASE_BACKEND_URL}/auth/google/callback`,
+  }),
 );
 
 router.get(
   '/google/callback',
   passport.authenticate('google', {
+    callbackURL: `${BASE_BACKEND_URL}/auth/google/callback`,
     successRedirect: CLIENT_URL,
-    failureRedirect: '/login/failed',
+    failureRedirect: '/auth/login/failed',
   }),
 );
 
 router.get(
   '/github',
-  passport.authenticate('github', { scope: ['read:user', 'user:email'] }),
+  passport.authenticate('github', {
+    scope: ['read:user', 'user:email'],
+    callbackURL: `${BASE_BACKEND_URL}/auth/github/callback`,
+  }),
 );
 
 router.get(
   '/github/callback',
   passport.authenticate('github', {
+    callbackURL: `${BASE_BACKEND_URL}/auth/github/callback`,
     successRedirect: CLIENT_URL,
-    failureRedirect: '/login/failed',
+    failureRedirect: '/auth/login/failed',
   }),
 );
 
