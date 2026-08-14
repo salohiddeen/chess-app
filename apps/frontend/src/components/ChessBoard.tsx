@@ -6,13 +6,11 @@ import LegalMoveIndicator from './chess-board/LegalMoveIndicator';
 import ChessSquare from './chess-board/ChessSquare';
 import NumberNotation from './chess-board/NumberNotation';
 import { drawArrow } from '../utils/canvas';
-import useWindowSize from '../hooks/useWindowSize';
 import Confetti from 'react-confetti';
 import MoveSound from '/move.wav';
 import CaptureSound from '/capture.wav';
 
 import { useRecoilState } from 'recoil';
-
 import { isBoardFlippedAtom, movesAtom, userSelectedMoveIndexAtom } from '@repo/store/chessBoard';
 
 export function isPromoting(chess: Chess, from: Square, to: Square) {
