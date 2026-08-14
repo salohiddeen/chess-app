@@ -18,7 +18,7 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(cookieParser());
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 
 app.use(
   session({
@@ -39,14 +39,14 @@ app.use(passport.initialize());
 app.use(passport.authenticate('session'));
 
 const allowedHosts = process.env.ALLOWED_HOSTS
-  ? process.env.ALLOWED_HOSTS.split(',')
-  : [];
+  ? process.env.ALLOWED_HOSTS.split(',').map((host) => host.trim())
+  : ['http://localhost:5173'];
 
 app.use(
   cors({
     origin: allowedHosts,
     methods: 'GET,POST,PUT,DELETE',
-    credentials: true,
+    credentials: true, 
   }),
 );
 
