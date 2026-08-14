@@ -1,9 +1,7 @@
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import "./App.css";
 import "./themes.css";
 
+import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Landing } from './screens/Landing';
 import { Game } from './screens/Game';
@@ -31,6 +29,17 @@ function App() {
 }
 
 function AuthApp() {
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+      localStorage.setItem('token', token);
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
