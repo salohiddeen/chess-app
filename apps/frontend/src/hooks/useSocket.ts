@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@repo/store/useUser';
 
-const WS_URL const API_BASE_URL = import.meta.env.VITE_APP_API_URL || 
-  (window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
-    : 'https://chess-app-6g4f.onrender.com');
+const WS_URL =
+  import.meta.env.VITE_APP_WS_URL ||
+  (window.location.protocol === 'https:'
+    ? 'wss://chess-app-6g4f.onrender.com'
+    : 'ws://localhost:8080');
 
 export const useSocket = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -17,7 +18,7 @@ export const useSocket = () => {
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      console.log('WS: Ulandi ✅');
+      console.log('WS: Muvaffaqiyatli ulandi ✅');
       setSocket(ws);
     };
 
